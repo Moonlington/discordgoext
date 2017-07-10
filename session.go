@@ -15,7 +15,7 @@ type Context struct {
 	Channel *discordgo.Channel
 	Guild   *discordgo.Guild
 	Mess    *discordgo.MessageCreate
-	Sess    *Flession
+	Sess    *FloFloSession
 }
 
 // The Command structy stores the command.
@@ -39,8 +39,8 @@ func NewCommand(name, description, usage, detaileddescription string, onmessage 
 	}
 }
 
-// Flession handles the bot and it's commands.
-type Flession struct {
+// FloFloSession handles the bot and it's commands.
+type FloFloSession struct {
 	*discordgo.Session
 	Token                string
 	Prefix               string
@@ -49,13 +49,13 @@ type Flession struct {
 	removeMessageHandler func()
 }
 
-// New creates a Flession from a token.
-func New(token, prefix string, userbot bool) (*Flession, error) {
+// New creates a FloFloSession from a token.
+func New(token, prefix string, userbot bool) (*FloFloSession, error) {
 	s, err := discordgo.New(token)
 	if err != nil {
 		return nil, err
 	}
-	flo := &Flession{
+	flo := &FloFloSession{
 		Session:  s,
 		Token:    token,
 		Prefix:   prefix,
@@ -100,7 +100,7 @@ func New(token, prefix string, userbot bool) (*Flession, error) {
 }
 
 // ChangeMessageHandler handles the changing of the message handler (Lots of handlers.)
-func (f *Flession) ChangeMessageHandler(handler func(s *discordgo.Session, m *discordgo.MessageCreate)) {
+func (f *FloFloSession) ChangeMessageHandler(handler func(s *discordgo.Session, m *discordgo.MessageCreate)) {
 	undo := f.AddHandler(handler)
 	if f.removeMessageHandler != nil {
 		f.removeMessageHandler()
@@ -109,7 +109,7 @@ func (f *Flession) ChangeMessageHandler(handler func(s *discordgo.Session, m *di
 }
 
 // AddCommand handles the adding of Commands to the handler.
-func (f *Flession) AddCommand(c *Command, category string) {
+func (f *FloFloSession) AddCommand(c *Command, category string) {
 	c.Category = category
 	f.Commands = append(f.Commands, c)
 }
@@ -117,7 +117,7 @@ func (f *Flession) AddCommand(c *Command, category string) {
 // HandleSubcommands returns the Context and Command that is being called
 // ctx: Context used
 // called: Command called
-func (f *Flession) HandleSubcommands(ctx *Context, called *Command) (*Context, *Command) {
+func (f *FloFloSession) HandleSubcommands(ctx *Context, called *Command) (*Context, *Command) {
 	if len(ctx.Args) != 0 {
 		var scalled *Command
 		ok := false
@@ -143,7 +143,7 @@ func (f *Flession) HandleSubcommands(ctx *Context, called *Command) (*Context, *
 
 // HandleCommands handles the Context and calls Command
 // ctx: Context used
-func (f *Flession) HandleCommands(ctx *Context) {
+func (f *FloFloSession) HandleCommands(ctx *Context) {
 	if strings.ToLower(ctx.Invoked) == "help" {
 		go f.HelpFunction(ctx)
 	} else {
@@ -164,14 +164,14 @@ func (f *Flession) HandleCommands(ctx *Context) {
 }
 
 // CreateEmbed handles the easy creation of Embeds.
-func (f *Flession) CreateEmbed(ctx *Context) *discordgo.MessageEmbed {
+func (f *FloFloSession) CreateEmbed(ctx *Context) *discordgo.MessageEmbed {
 	color := ctx.Sess.State.UserColor(f.State.User.ID, ctx.Mess.ChannelID)
 	return &discordgo.MessageEmbed{Color: color}
 }
 
 // HelpFunction handles the Help command for the CommandHandler
 // ctx: Context used
-func (f *Flession) HelpFunction(ctx *Context) {
+func (f *FloFloSession) HelpFunction(ctx *Context) {
 	embed := f.CreateEmbed(ctx)
 	var desc string
 	if len(ctx.Args) != 0 {

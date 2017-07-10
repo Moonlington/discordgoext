@@ -4,11 +4,11 @@
 [![Floretta's Coding Space](https://img.shields.io/badge/discord-Floretta's%20Coding%20Space-738bd7.svg?style=flat-square)](https://discordapp.com/invite/pPxa93F)
 [![Patreon](https://img.shields.io/badge/patreon-donate!-orange.svg?style=flat-square)](https://www.patreon.com/floretta)
 
-> It's just the best, I think, Im not sure.
+> It's the best, I think, Im not sure.
 
 ## Current features
 
-Easily make commands, I guess?
+Adding commands and having a cool looking help command.
 
 ## Table of Contents
 
@@ -42,21 +42,21 @@ import (
 func main() {
 
 	// Create a new Discord session using the provided bot token.
-	flo, err := discordflo.New("Bot " + "INSERT YOUR BOT TOKEN", "pingbot.", false)
+	ffs, err := discordflo.New("Bot " + "INSERT YOUR BOT TOKEN", "pingbot.", false)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
 	}
 
-	flo.AddCommand(discordflo.NewCommand("ping", "Pings", "", "", func(ctx *discordflo.Context) {
-		flo.ChannelMessageSend(ctx.Mess.ChannelID, "pong!")
+	ffs.AddCommand(discordflo.NewCommand("ping", "Pings", "", "", func(ctx *discordflo.Context) {
+		ffs.ChannelMessageSend(ctx.Mess.ChannelID, "pong!")
 	}), "Pings")
-	flo.AddCommand(discordflo.NewCommand("pong", "Pongs", "", "", func(ctx *discordflo.Context) {
-		flo.ChannelMessageSend(ctx.Mess.ChannelID, "ping!")
+	ffs.AddCommand(discordflo.NewCommand("pong", "Pongs", "", "", func(ctx *discordflo.Context) {
+		ffs.ChannelMessageSend(ctx.Mess.ChannelID, "ping!")
 	}), "Pongs")
 
 	// Open a websocket connection to Discord and begin listening.
-	err = flo.Open()
+	err = ffs.Open()
 	if err != nil {
 		fmt.Println("error opening connection,", err)
 		return
@@ -69,7 +69,7 @@ func main() {
 	<-sc
 
 	// Cleanly close down the Discord session.
-	flo.Close()
+	ffs.Close()
 }
 ```
 
