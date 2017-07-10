@@ -8,7 +8,7 @@
 
 ## Current features
 
-Nothing, I know, I'm disappointing.
+Easily make commands, I guess?
 
 ## Table of Contents
 
@@ -25,8 +25,53 @@ go get -u github.com/Moonlington/discordflo
 
 ## Usage
 
-You don't, at least, not yet.
+Here's an example of a bot that pings and pongs;
 
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/Moonlington/discordflo"
+)
+
+func main() {
+
+	// Create a new Discord session using the provided bot token.
+	flo, err := discordflo.New("Bot " + "INSERT YOUR BOT TOKEN", "pingbot.", false)
+	if err != nil {
+		fmt.Println("error creating Discord session,", err)
+		return
+	}
+
+	flo.AddCommand(discordflo.NewCommand("ping", "Pings", "", "", func(ctx *discordflo.Context) {
+		flo.ChannelMessageSend(ctx.Mess.ChannelID, "pong!")
+	}), "Pings")
+	flo.AddCommand(discordflo.NewCommand("pong", "Pongs", "", "", func(ctx *discordflo.Context) {
+		flo.ChannelMessageSend(ctx.Mess.ChannelID, "ping!")
+	}), "Pongs")
+
+	// Open a websocket connection to Discord and begin listening.
+	err = flo.Open()
+	if err != nil {
+		fmt.Println("error opening connection,", err)
+		return
+	}
+
+	// Wait here until CTRL-C or other term signal is received.
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
+	// Cleanly close down the Discord session.
+	flo.Close()
+}
+```
 
 ## Contribute
 
