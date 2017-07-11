@@ -48,12 +48,26 @@ func main() {
 		return
 	}
 
-	ffs.AddCommand(discordflo.NewCommand("ping", "Pings", "", "", func(ctx *discordflo.Context) {
-		ffs.ChannelMessageSend(ctx.Mess.ChannelID, "pong!")
-	}), "Pings")
-	ffs.AddCommand(discordflo.NewCommand("pong", "Pongs", "", "", func(ctx *discordflo.Context) {
-		ffs.ChannelMessageSend(ctx.Mess.ChannelID, "ping!")
-	}), "Pongs")
+	ffs.AddCommand("Pings", discordflo.NewCommand("ping", "Pings", "", "", func(ctx *discordflo.Context) {
+		ctx.SendMessage("pong!")
+	}))
+	ffs.AddCommand("Pongs", discordflo.NewCommand("pong", "Pongs", "", "", func(ctx *discordflo.Context) {
+		ctx.SendMessage("ping!")
+	}))
+
+	ffs.AddCommand("Saying Hi", discordflo.NewCommand(
+		"hi",
+		"Says hi",
+		"[to who]",
+		"If `to who` is not provided, it will say hi to you.",
+		func(ctx *discordflo.Context) {
+			if len(ctx.Argstr) != 0 {
+				ctx.SendMessage("Hi " + ctx.Argstr + "!")
+			} else {
+				ctx.SendMessage("Hi " + ctx.Mess.Author.Username + "!")
+			}
+		},
+	))
 
 	// Open a websocket connection to Discord and begin listening.
 	err = ffs.Open()

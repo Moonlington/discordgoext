@@ -7,38 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// A Context struct holds variables for Messages
-type Context struct {
-	Invoked string
-	Argstr  string
-	Args    []string
-	Channel *discordgo.Channel
-	Guild   *discordgo.Guild
-	Mess    *discordgo.MessageCreate
-	Sess    *FloFloSession
-}
-
-// The Command structy stores the command.
-type Command struct {
-	Name        string
-	OnMessage   func(ctx *Context)
-	Description string
-	Usage       string
-	Detailed    string
-	Subcommands []*Command
-	Category    string
-}
-
-// NewCommand handles the creation of Commands.
-func NewCommand(name, description, usage, detaileddescription string, onmessage func(ctx *Context)) *Command {
-	return &Command{
-		Name:        name,
-		OnMessage:   onmessage,
-		Description: description,
-		Subcommands: []*Command{},
-	}
-}
-
 // FloFloSession handles the bot and it's commands.
 type FloFloSession struct {
 	*discordgo.Session
@@ -109,7 +77,7 @@ func (f *FloFloSession) ChangeMessageHandler(handler func(s *discordgo.Session, 
 }
 
 // AddCommand handles the adding of Commands to the handler.
-func (f *FloFloSession) AddCommand(c *Command, category string) {
+func (f *FloFloSession) AddCommand(category string, c *Command) {
 	c.Category = category
 	f.Commands = append(f.Commands, c)
 }
