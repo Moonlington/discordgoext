@@ -9,6 +9,7 @@ type Command struct {
 	Detailed    string
 	Subcommands []*Command
 	Category    string
+	Check       func(ctx *Context) bool
 }
 
 // NewCommand handles the creation of Commands.
@@ -20,6 +21,9 @@ func NewCommand(name, description, usage, detaileddescription string, onmessage 
 		Detailed:    detaileddescription,
 		Description: description,
 		Subcommands: []*Command{},
+		Check: func(ctx *Context) bool {
+			return true
+		},
 	}
 }
 

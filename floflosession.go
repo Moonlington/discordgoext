@@ -82,6 +82,12 @@ func (f *FloFloSession) AddCommand(category string, c *Command) {
 	f.Commands = append(f.Commands, c)
 }
 
+// AddPrivateCommand handles the adding of Private Commands to the handler.
+func (f *FloFloSession) AddPrivateCommand(category string, check func(ctx *Context) bool, c *Command) {
+	c.Check = check
+	f.AddCommand(category, c)
+}
+
 // HandleSubcommands returns the Context and Command that is being called
 // ctx: Context used
 // called: Command called
@@ -126,7 +132,9 @@ func (f *FloFloSession) HandleCommands(ctx *Context) {
 		}
 		if ok {
 			rctx, rcalled := f.HandleSubcommands(ctx, called)
-			go rcalled.OnMessage(rctx)
+			if rcalled.Check(ctx) {
+				go rcalled.OnMessage(rctx)
+			}
 		}
 	}
 }
@@ -160,35 +168,42 @@ func (f *FloFloSession) HelpFunction(ctx *Context) {
 			if scalled.Detailed == "" {
 				scalled.Detailed = scalled.Description
 			}
-			desc = fmt.Sprintf("`%s%s %s`\n%s", f.Prefix, command+sctx.Invoked, scalled.Usage, scalled.Detailed)
+			if scalled.Check(ctx) {
+				desc = fmt.Sprintf("`%s%s %s`\n%s", f.Prefix, command+sctx.Invoked, scalled.Usage, scalled.Detailed)
+			}
 			if len(scalled.Subcommands) != 0 {
 				desc += "\n\nSubcommands:"
 				desc += fmt.Sprintf(" `%shelp %s [subcommand]` for more info!", f.Prefix, command+sctx.Invoked)
 				for _, k := range scalled.Subcommands {
-					desc += fmt.Sprintf("\n`%s%s %s` - %s", f.Prefix, command, k.Name, k.Description)
+					if k.Check(ctx) {
+						desc += fmt.Sprintf("\n`%s%s %s %s` - %s", f.Prefix, command, k.Name, k.Usage, k.Description)
+					}
 				}
 			}
 		} else {
 			desc = "No command called `" + command + "` found!"
 		}
 	} else {
-		desc = "Commands:"
-		desc += fmt.Sprintf(" `%shelp [command]` for more info!", f.Prefix)
+		desc = fmt.Sprintf(" `%shelp [command]` for more info!", f.Prefix)
 		sorted := make(map[string][]*Command)
 		for _, c := range f.Commands {
-			if c.Category == "" {
-				sorted["Uncategorized"] = append(sorted["Uncategorized"], c)
-			} else {
-				sorted[c.Category] = append(sorted[c.Category], c)
+			if c.Check(ctx) {
+				if c.Category == "" {
+					sorted["Uncategorized"] = append(sorted["Uncategorized"], c)
+				} else {
+					sorted[c.Category] = append(sorted[c.Category], c)
+				}
 			}
 		}
 		for k, v := range sorted {
 			var fdesc string
 			field := &discordgo.MessageEmbedField{Name: k + ":"}
 			for _, command := range v {
-				fdesc += fmt.Sprintf("\n`%s%s` - %s", f.Prefix, command.Name, command.Description)
+				if command.Check(ctx) {
+					fdesc += fmt.Sprintf("\n`%s%s %s` - %s", f.Prefix, command.Name, command.Usage, command.Description)
+					field.Value = fdesc[1:]
+				}
 			}
-			field.Value = fdesc[1:]
 			embed.Fields = append(embed.Fields, field)
 		}
 	}
