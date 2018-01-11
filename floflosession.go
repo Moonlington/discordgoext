@@ -2,6 +2,7 @@ package discordflo
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -60,8 +61,7 @@ func New(token, prefix string, userbot bool) (*FloFloSession, error) {
 				guild, _ := s.State.Guild(channel.GuildID)
 				ctx = &Context{Invoked: invoked, Argstr: argstr, Args: args, Channel: channel, Guild: guild, Mess: m, Sess: flo}
 			}
-
-			flo.HandleCommands(ctx)
+			go flo.HandleCommands(ctx)
 		}
 	})
 	return flo, err
@@ -133,7 +133,12 @@ func (f *FloFloSession) HandleCommands(ctx *Context) {
 		if ok {
 			rctx, rcalled := f.HandleSubcommands(ctx, called)
 			if rcalled.Check(ctx) {
-				go rcalled.OnMessage(rctx)
+				defer func() {
+					if x := recover(); x != nil {
+						log.Printf("Panicked and recovered: %v", x)
+					}
+				}()
+				rcalled.OnMessage(rctx)
 			}
 		}
 	}
