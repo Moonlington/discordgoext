@@ -18,7 +18,7 @@ type Context struct {
 	Channel *discordgo.Channel
 	Guild   *discordgo.Guild
 	Mess    *discordgo.MessageCreate
-	Sess    *DiscordSession
+	Sess    *ExtSession
 }
 
 // SendEmbed is a helper function to easily send embeds.

@@ -8,8 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// DiscordSession handles the bot and it's commands.
-type DiscordSession struct {
+// ExtSession handles the bot and it's commands.
+type ExtSession struct {
 	*discordgo.Session
 	Token                string
 	Prefix               string
@@ -18,13 +18,13 @@ type DiscordSession struct {
 	removeMessageHandler func()
 }
 
-// New creates a DiscordSession from a token.
-func New(token, prefix string, userbot bool) (*DiscordSession, error) {
+// New creates a ExtSession from a token.
+func New(token, prefix string, userbot bool) (*ExtSession, error) {
 	s, err := discordgo.New(token)
 	if err != nil {
 		return nil, err
 	}
-	agent := &DiscordSession{
+	agent := &ExtSession{
 		Session:  s,
 		Token:    token,
 		Prefix:   prefix,
@@ -68,7 +68,7 @@ func New(token, prefix string, userbot bool) (*DiscordSession, error) {
 }
 
 // ChangeMessageHandler handles the changing of the message handler (Lots of handlers.)
-func (s *DiscordSession) ChangeMessageHandler(handler func(s *discordgo.Session, m *discordgo.MessageCreate)) {
+func (s *ExtSession) ChangeMessageHandler(handler func(s *discordgo.Session, m *discordgo.MessageCreate)) {
 	undo := s.AddHandler(handler)
 	if s.removeMessageHandler != nil {
 		s.removeMessageHandler()
@@ -77,13 +77,13 @@ func (s *DiscordSession) ChangeMessageHandler(handler func(s *discordgo.Session,
 }
 
 // AddCommand handles the adding of Commands to the handler.
-func (s *DiscordSession) AddCommand(category string, c *Command) {
+func (s *ExtSession) AddCommand(category string, c *Command) {
 	c.Category = category
 	s.Commands = append(s.Commands, c)
 }
 
 // AddPrivateCommand handles the adding of Private Commands to the handler.
-func (s *DiscordSession) AddPrivateCommand(category string, check func(ctx *Context) bool, c *Command) {
+func (s *ExtSession) AddPrivateCommand(category string, check func(ctx *Context) bool, c *Command) {
 	c.Check = check
 	s.AddCommand(category, c)
 }
@@ -91,7 +91,7 @@ func (s *DiscordSession) AddPrivateCommand(category string, check func(ctx *Cont
 // HandleSubcommands returns the Context and Command that is being called
 // ctx: Context used
 // called: Command called
-func (s *DiscordSession) HandleSubcommands(ctx *Context, called *Command) (*Context, *Command) {
+func (s *ExtSession) HandleSubcommands(ctx *Context, called *Command) (*Context, *Command) {
 	if len(ctx.Args) != 0 {
 		var scalled *Command
 		ok := false
@@ -117,7 +117,7 @@ func (s *DiscordSession) HandleSubcommands(ctx *Context, called *Command) (*Cont
 
 // HandleCommands handles the Context and calls Command
 // ctx: Context used
-func (s *DiscordSession) HandleCommands(ctx *Context) {
+func (s *ExtSession) HandleCommands(ctx *Context) {
 	if strings.ToLower(ctx.Invoked) == "help" {
 		go s.HelpFunction(ctx)
 	} else {
@@ -145,14 +145,14 @@ func (s *DiscordSession) HandleCommands(ctx *Context) {
 }
 
 // CreateEmbed handles the easy creation of Embeds.
-func (s *DiscordSession) CreateEmbed(ctx *Context) *discordgo.MessageEmbed {
+func (s *ExtSession) CreateEmbed(ctx *Context) *discordgo.MessageEmbed {
 	color := ctx.Sess.State.UserColor(s.State.User.ID, ctx.Mess.ChannelID)
 	return &discordgo.MessageEmbed{Color: color}
 }
 
 // HelpFunction handles the Help command for the CommandHandler
 // ctx: Context used
-func (s *DiscordSession) HelpFunction(ctx *Context) {
+func (s *ExtSession) HelpFunction(ctx *Context) {
 	embed := s.CreateEmbed(ctx)
 	var desc string
 	if len(ctx.Args) != 0 {
