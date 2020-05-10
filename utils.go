@@ -1,4 +1,4 @@
-package discordflo
+package discordgoext
 
 import (
 	"strconv"

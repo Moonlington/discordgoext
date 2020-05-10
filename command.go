@@ -1,4 +1,4 @@
-package discordflo
+package discordgoext
 
 // The Command structy stores the command.
 type Command struct {

@@ -1,4 +1,4 @@
-package discordflo
+package discordgoext
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ type Context struct {
 	Channel *discordgo.Channel
 	Guild   *discordgo.Guild
 	Mess    *discordgo.MessageCreate
-	Sess    *FloFloSession
+	Sess    *DiscordSession
 }
 
 // SendEmbed is a helper function to easily send embeds.
