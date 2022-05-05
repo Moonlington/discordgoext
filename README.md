@@ -3,7 +3,9 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Patreon](https://img.shields.io/badge/patreon-donate!-orange.svg?style=flat-square)](https://www.patreon.com/floretta)
 
-> It's the best, I think, Im not sure.
+## Deprecation notice
+
+It's been two years since I have worked on this project. I'm not even sure if it still works. Given the new additions to the Discord API and future bots' reliance on them for their functionality, I have created a new and improved project called [Harmonia](https://github.com/Moonlington/harmonia). Please use that module instead.
 
 ## Current features
 
